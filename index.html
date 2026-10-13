@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CF Poly — Polygon Uploader</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+  <header>
+    <div class="logo-container">
+      <svg class="logo-svg" viewBox="40 38 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path class="shield-bg"
+          d="m 43.587235,49.990515 c 0.337015,-8.088353 7.779423,-9.352158 9.099397,-9.324074 1.319975,0.02809 70.773088,-0.05617 74.452168,0 3.67908,0.05617 8.56579,3.20164 8.87472,8.284945 0.30893,5.083305 0.0281,73.806234 0.0281,77.457224 0,3.65099 -4.26885,8.31303 -8.31303,8.42537 -4.04417,0.11234 -18.13787,0.0988 -29.060112,0.0272 C 64.26374,133.65794 45.471298,106.92608 43.729926,82.30553 42.505025,64.987154 43.587235,49.990515 43.587235,49.990515 Z" />
+        <path class="arch-fg"
+          d="m 98.760746,134.85292 0.13337,-43.360859 -15.871072,-7.935535 -0.100028,48.780204 c 0,0 -6.618092,-1.76811 -13.770489,-6.36843 -6.084504,-3.91346 -10.469572,-8.86913 -10.469572,-8.86913 0,0 -0.06668,-46.212828 0.06668,-54.48179 0.13337,-8.268962 9.977321,-12.459477 14.937479,-10.869683 5.201444,1.667129 32.082776,16.411909 41.411486,20.405663 7.32733,3.136932 7.9022,10.702971 7.9022,10.702971 v 52.049949 z" />
+      </svg>
+      <span class="logo-text">CF <span id="logo-suffix" class="logo-suffix">Poly</span></span>
+    </div>
+
+    <div class="header-actions">
+      <button id="lang-toggle" class="lang-toggle-btn" aria-label="Switch language"
+        title="Сменить язык / Switch language">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        <span id="lang-label">EN</span>
+      </button>
+
+      <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark theme" title="Toggle theme">
+        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle id="sun-circle" cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div id="auth-view" class="auth-card">
+      <div class="auth-header">
+        <h1 id="auth-title">Connect Polygon Account</h1>
+        <p id="auth-subtitle">Authenticate using your API keys. Credentials are stored securely in your browser's local
+          storage and never sent to external servers.</p>
+      </div>
+
+      <form id="credentials-form" novalidate>
+        <div class="input-group">
+          <input type="text" id="api-key" placeholder=" " required autocomplete="username">
+          <label for="api-key" id="label-api-key">API Key (key)</label>
+        </div>
+
+        <div class="input-group">
+          <input type="password" id="api-secret" placeholder=" " required autocomplete="current-password">
+          <label for="api-secret" id="label-api-secret">API Secret (secret)</label>
+          <button type="button" class="password-toggle" id="secret-toggle" aria-label="Toggle password visibility">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+
+        <button type="submit" class="btn-primary" id="submit-btn">
+          <span class="spinner" id="btn-spinner"></span>
+          <span class="btn-text" id="btn-text">Verify & Connect</span>
+        </button>
+      </form>
+
+      <div id="status-alert" class="alert">
+        <svg id="alert-icon-error" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <svg id="alert-icon-success" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span id="alert-message"></span>
+      </div>
+
+      <div class="info-text">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span id="safety-text">Your data is stored strictly inside your local browser storage.</span>
+      </div>
+    </div>
+
+    <div id="dashboard-view" class="dashboard-container" style="display: none;">
+      <div class="dashboard-header">
+        <div>
+          <h2 id="dash-title">Problems List</h2>
+          <p id="dash-subtitle" class="dash-subtitle">Manage your Polygon problems.</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button id="cf-tools-open" class="btn-primary btn-new-problem" type="button">Codeforces + Test Lab</button>
+          <button id="import-pt-btn" class="btn-primary btn-new-problem btn-import-pt">
+            <span id="dash-import-pt-btn">Pythontutor Import</span>
+          </button>
+          <button id="import-ulearn-btn" class="btn-primary btn-new-problem btn-import-ulearn">
+            <span id="dash-import-ulearn-btn">Ulearn Import</span>
+          </button>
+          <button id="create-prob-btn" class="btn-primary btn-new-problem">
+            <span id="dash-new-problem-btn">New Problem</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-container">
+          <table id="problems-table">
+            <thead>
+              <tr>
+                <th id="th-id">ID</th>
+                <th id="th-name">Name</th>
+                <th id="th-owner">Owner</th>
+                <th id="th-revision">Revision</th>
+                <th id="th-access">Access</th>
+                <th id="th-modified">Modified</th>
+                <th id="th-actions" style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="problems-table-body">
+            </tbody>
+          </table>
+
+          <div id="table-loader" class="table-loader" style="display: none;">
+            <div class="spinner green-spinner"></div>
+            <span id="loading-problems-text">Loading problems...</span>
+          </div>
+          <div id="table-empty" class="table-empty" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            <p id="no-problems-text">No problems found on this account.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="create-problem-view" class="create-problem-container" style="display: none;">
+      <div class="create-problem-header">
+        <div>
+          <h2 id="step-title">Step 1: Statement and Main Information</h2>
+          <p id="step-subtitle" class="dash-subtitle">Fill in the statement details and main settings of the problem.
+          </p>
+        </div>
+      </div>
+
+      <div class="editor-split-layout">
+        <div class="editor-pane">
+          <!-- Statement Language Tabs Bar -->
+          <div class="stmt-lang-tabs-bar" id="stmt-lang-tabs-bar">
+            <div class="stmt-lang-tabs" id="stmt-lang-tabs">
+              <!-- Rendered dynamically -->
+            </div>
+            <button type="button" class="btn-add-stmt-lang" id="btn-add-stmt-lang">
+              + <span id="text-add-stmt-lang">Add Language</span>
+            </button>
+          </div>
+
+          <form id="problem-statement-form" novalidate>
+            <div class="form-row-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
+              <div class="input-group">
+                <input type="number" id="prob-time-limit" value="1000" placeholder=" " required min="100" max="10000">
+                <label for="prob-time-limit" id="label-time-limit">Time Limit (ms)</label>
+              </div>
+              <div class="input-group">
+                <input type="number" id="prob-memory-limit" value="256" placeholder=" " required min="4" max="2048">
+                <label for="prob-memory-limit" id="label-memory-limit">Memory Limit (MB)</label>
+              </div>
+            </div>
+
+            <div class="form-row-grid">
+              <div class="input-group">
+                <input type="text" id="prob-name" placeholder=" " required>
+                <label for="prob-name" id="label-prob-name">Problem Name</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="prob-system-name" placeholder=" " pattern="[a-z0-9\-]*">
+                <label for="prob-system-name" id="label-prob-system-name">System Name (optional)</label>
+              </div>
+            </div>
+
+            <div class="tex-info-box">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>
+                <span id="tex-info-prefix">See our</span>
+                <a href="https://polygon.codeforces.com/docs/statements-tex-manual?ccid=8a667637d3b022900ec05d699a07cdd4"
+                  target="_blank" class="accent-link">brief manual</a>
+                <span id="tex-info-suffix">to learn about supported TeX commands.</span>
+              </span>
+            </div>
+
+            <div class="input-group">
+              <textarea id="prob-legend" placeholder=" " rows="6" required></textarea>
+              <label for="prob-legend" id="label-prob-legend">Legend</label>
+            </div>
+            <div class="input-group">
+              <textarea id="prob-input-format" placeholder=" " rows="4" required></textarea>
+              <label for="prob-input-format" id="label-prob-input-format">Input Format</label>
+            </div>
+
+            <div class="input-group">
+              <textarea id="prob-output-format" placeholder=" " rows="4" required></textarea>
+              <label for="prob-output-format" id="label-prob-output-format">Output Format</label>
+            </div>
+            <div class="input-group">
+              <textarea id="prob-notes" placeholder=" " rows="4"></textarea>
+              <label for="prob-notes" id="label-prob-notes">Notes</label>
+            </div>
+
+            <div class="input-group">
+              <textarea id="prob-tutorial" placeholder=" " rows="4"></textarea>
+              <label for="prob-tutorial" id="label-prob-tutorial">Tutorial</label>
+            </div>
+          </form>
+        </div>
+
+        <div class="preview-pane">
+          <div class="preview-header-bar">
+            <span id="preview-label">Live Preview</span>
+          </div>
+          <div class="statement-card">
+            <h1 id="preview-title" class="statement-title"></h1>
+
+            <div class="statement-limits">
+              <div>
+                <span class="limit-label" id="label-preview-time-limit">Time limit per test:</span>
+                <span id="preview-time-limit">1000 ms</span>
+              </div>
+              <div>
+                <span class="limit-label" id="label-preview-memory-limit">Memory limit per test:</span>
+                <span id="preview-memory-limit">256 MB</span>
+              </div>
+            </div>
+
+            <div class="statement-section">
+              <div id="preview-legend" class="statement-text"></div>
+            </div>
+            <div class="statement-section">
+              <h3 class="section-title" id="preview-section-input">Input</h3>
+              <div id="preview-input-format" class="statement-text"></div>
+            </div>
+
+            <div class="statement-section">
+              <h3 class="section-title" id="preview-section-output">Output</h3>
+              <div id="preview-output-format" class="statement-text"></div>
+            </div>
+            <div id="preview-notes-section" class="statement-section" style="display: none;">
+              <h3 class="section-title" id="preview-section-notes">Note</h3>
+              <div id="preview-notes" class="statement-text"></div>
+            </div>
+            <div id="preview-tutorial-section" class="statement-section" style="display: none;">
+              <h3 class="section-title" id="preview-section-tutorial">Tutorial</h3>
+              <div id="preview-tutorial" class="statement-text"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-footer">
+        <button id="cancel-create-btn" class="btn-secondary btn-flat-cancel">
+          <span id="btn-back-to-dash">Back to Dashboard</span>
+        </button>
+        <button id="next-step-btn" class="btn-primary btn-next-step">
+          <span id="btn-next-step-text">Next Step</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="upload-solution-view" class="create-problem-container"
+      style="display: none; opacity: 0; transform: translateY(15px);">
+      <div class="create-problem-header">
+        <div>
+          <h2 id="step2-title">Step 2: Upload Correct Solution</h2>
+          <p id="step2-subtitle" class="dash-subtitle">Upload the correct solution code and select the programming
+            language.</p>
+        </div>
+      </div>
+
+      <div class="editor-split-layout">
+        <div class="editor-pane">
+          <div class="input-group">
+            <select id="sol-lang" required>
+              <option value="" disabled selected id="opt-select-lang">Select Language</option>
+              <option value="cpp.g++20">C++20 (gcc 13-diagnostics)</option>
+              <option value="cpp.g++17">C++17 (gcc 11-diagnostics)</option>
+              <option value="python.3">Python 3 (3.11.2)</option>
+              <option value="pypy.3">PyPy 3 (7.3.11)</option>
+              <option value="java17">Java 17 (OpenJDK)</option>
+              <option value="java11">Java 11 (OpenJDK)</option>
+              <option value="rust">Rust (1.70.0)</option>
+              <option value="go">Go (1.20.4)</option>
+              <option value="kotlin">Kotlin (1.8.20)</option>
+              <option value="csharp.dotnet">C# .NET (8.0)</option>
+            </select>
+            <label for="sol-lang" id="label-sol-lang" class="select-label">Programming Language</label>
+          </div>
+
+          <div class="drop-zone" id="sol-drop-zone">
+            <svg class="drop-zone-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <div class="drop-zone-text" id="sol-drop-text">Drag & drop your solution file here or click to browse</div>
+            <input type="file" id="sol-file-input" class="drop-zone-input"
+              accept=".cpp,.h,.hpp,.py,.java,.rs,.go,.kt,.cs,.txt">
+          </div>
+
+          <div class="input-group" style="margin-top: 20px;">
+            <textarea id="sol-code" class="code-editor" placeholder=" " rows="14" required></textarea>
+            <label for="sol-code" id="label-sol-code">Solution Code</label>
+          </div>
+        </div>
+
+        <div class="preview-pane">
+          <div class="ai-prompt-section">
+            <div class="ai-header">
+              <h3 id="ai-card-title">AI Solution Generator</h3>
+              <p id="ai-card-subtitle" class="dash-subtitle">Generate a prompt for LLMs using the task statement.</p>
+            </div>
+
+            <div class="ai-controls">
+              <button id="generate-prompt-btn" class="btn-primary btn-generate-prompt">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span id="btn-generate-prompt-text">Сгенерировать промпт</span>
+              </button>
+
+              <div class="accordion-item">
+                <button id="accordion-toggle-btn" class="accordion-header" aria-expanded="false"
+                  aria-label="Toggle instructions">
+                  <svg id="accordion-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div id="accordion-content" class="accordion-content"
+              style="max-height: 0px; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+              <div class="accordion-inner">
+                <h4 id="help-title">How to use:</h4>
+                <ol id="help-steps">
+                  <li>Fill in the task statements in Step 1 (Legend, Inputs, Outputs).</li>
+                  <li>Choose the programming language in the dropdown on the left.</li>
+                  <li>Click "Generate Prompt" to create a structured prompt for AI.</li>
+                  <li>Copy the prompt, paste it into ChatGPT, Claude or Gemini.</li>
+                  <li>Paste the generated code into the code field on the left.</li>
+                </ol>
+              </div>
+            </div>
+
+            <div id="prompt-output-container" class="prompt-output-container" style="display: none;">
+              <div class="prompt-output-header">
+                <span id="prompt-output-title">Generated Prompt</span>
+                <button id="copy-prompt-btn" class="btn-text-action">
+                  <span id="btn-copy-prompt-text">Copy</span>
+                </button>
+              </div>
+              <textarea id="prompt-output-text" readonly rows="8"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-footer">
+        <button id="back-to-step1-btn" class="btn-secondary btn-flat-cancel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="transform: rotate(180deg); margin-right: 8px;">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+          <span id="btn-back-to-step1">Back to Step 1</span>
+        </button>
+        <button id="next-step-2-btn" class="btn-primary btn-next-step">
+          <span id="btn-next-step-2-text">Next Step</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="checker-tests-view" class="create-problem-container"
+      style="display: none; opacity: 0; transform: translateY(15px);">
+      <div class="create-problem-header">
+        <div>
+          <h2 id="step3-title">Step 3: Checker and Tests</h2>
+          <p id="step3-subtitle" class="dash-subtitle">Select checker program, upload test files, and select statements
+            tests.</p>
+        </div>
+      </div>
+
+      <div class="editor-split-layout">
+        <div class="editor-pane">
+          <div class="input-group">
+            <select id="checker-select" required>
+              <option value="" disabled selected id="opt-select-checker">Select Checker</option>
+              <option value="std::ncmp.cpp">std::ncmp.cpp (Sequence of integers)</option>
+              <option value="std::wcmp.cpp">std::wcmp.cpp (Sequence of words)</option>
+              <option value="std::rcmp6.cpp">std::rcmp6.cpp (Floats, error &le; 10^-6)</option>
+              <option value="std::rcmp9.cpp">std::rcmp9.cpp (Floats, error &le; 10^-9)</option>
+              <option value="std::yesno.cpp">std::yesno.cpp (Yes/No, case-insensitive)</option>
+              <option value="std::lcmp.cpp">std::lcmp.cpp (Line-by-line comparison)</option>
+              <option value="custom">Custom checker source file...</option>
+            </select>
+            <label for="checker-select" id="label-checker-select" class="select-label">Checker Program</label>
+          </div>
+
+          <div class="tests-mode-tabs-bar" id="tests-mode-tabs-bar">
+            <button type="button" class="tests-mode-tab active" id="tab-btn-manual-tests">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span id="tab-label-manual-tests">Manual Tests</span>
+              <span class="tests-count-badge" id="badge-manual-tests-count">0</span>
+            </button>
+            <button type="button" class="tests-mode-tab" id="tab-btn-generator-tests">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+              <span id="tab-label-generator-tests">Test Generator</span>
+              <span class="tests-count-badge" id="badge-generator-tests-count">0</span>
+            </button>
+          </div>
+
+          <div id="section-manual-tests">
+            <div class="drop-zone" id="tests-drop-zone">
+              <svg class="drop-zone-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <div class="drop-zone-text" id="tests-drop-text">Drag & drop test files here or click to browse</div>
+              <input type="file" id="tests-file-input" class="drop-zone-input" accept=".txt,.in,.out" multiple>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px; margin-bottom: 6px;">
+              <button type="button" id="btn-add-manual-test" class="btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span id="btn-add-manual-test-text">Add Test Manually</span>
+              </button>
+            </div>
+
+            <div id="tests-list-container" class="table-card" style="margin-top: 16px; display: none;">
+              <div class="table-header-bar"
+                style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-weight: 500; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+                <span id="tests-list-header">Uploaded Tests</span>
+              </div>
+              <div class="table-container">
+                <table id="tests-table">
+                  <thead>
+                    <tr>
+                      <th id="th-test-order" style="width: 55px; text-align: center;">#</th>
+                      <th id="th-test-name">Test File</th>
+                      <th id="th-test-size">Size</th>
+                      <th id="th-test-statements" style="text-align: center; width: 150px;">Use in Statements</th>
+                      <th id="th-test-actions" style="text-align: right; width: 160px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tests-table-body">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="section-generator-tests" style="display: none;">
+            <div class="tex-info-box" id="generator-info-box">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>
+                <span id="gen-info-prefix">See the guide to learn</span>
+                <a href="https://codeforces.com/blog/entry/18291" target="_blank" class="accent-link"
+                  id="gen-info-link">how testlib generators work</a>
+                <span id="gen-info-suffix">in Polygon and Codeforces.</span>
+              </span>
+            </div>
+
+            <div class="drop-zone" id="generator-drop-zone">
+              <svg class="drop-zone-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="12" y2="12"></line>
+                <line x1="15" y1="15" x2="12" y2="12"></line>
+              </svg>
+              <div class="drop-zone-text" id="generator-drop-text">Drag & drop generator files (.cpp, .py, etc.) or click to browse</div>
+              <input type="file" id="generator-file-input" class="drop-zone-input" accept=".cpp,.c,.cc,.cxx,.py,.java,.pas" multiple>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px; margin-bottom: 6px;">
+              <button type="button" id="btn-add-generator-code" class="btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span id="btn-add-generator-code-text">Add Generator as Code</span>
+              </button>
+            </div>
+
+            <div id="generators-list-container" class="table-card" style="margin-top: 16px; display: none;">
+              <div class="table-header-bar"
+                style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-weight: 500; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+                <span id="generators-list-header">Uploaded Generators</span>
+              </div>
+              <div class="table-container">
+                <table id="generators-table">
+                  <thead>
+                    <tr>
+                      <th id="th-gen-order" style="width: 55px; text-align: center;">#</th>
+                      <th id="th-gen-name">Generator File</th>
+                      <th id="th-gen-size">Size</th>
+                      <th id="th-gen-actions" style="text-align: right; width: 180px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="generators-table-body">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="tests-script-card" style="margin-top: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label for="tests-script-input" id="lbl-tests-script"
+                  style="font-weight: 600; font-size: 14px; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" y1="19" x2="20" y2="19"></line>
+                  </svg>
+                  <span id="lbl-tests-script-title">Tests Generation Script</span>
+                </label>
+              </div>
+              <p id="lbl-tests-script-desc"
+                style="font-size: 12px; color: var(--text-secondary); margin: 0 0 8px 0; line-height: 1.4;">
+                Specify commands to run generators. Each line generates a test, e.g.: <code>gen 10 5 > $</code>
+              </p>
+              <textarea id="tests-script-input" class="code-editor" rows="6" placeholder="gen 10 5 > $&#10;gen 100 10 > $&#10;gen 1000 100 > $"
+                style="width: 100%; box-sizing: border-box; font-family: var(--font-mono, monospace); font-size: 13px; line-height: 1.4; resize: vertical; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; background: var(--bg-card); color: var(--text-primary);"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-pane">
+          <div class="ai-prompt-section">
+            <div class="ai-header">
+              <h3 id="ai-tests-title">AI Test Generator</h3>
+              <p id="ai-tests-subtitle" class="dash-subtitle">Generate a prompt for LLMs to write a test generator code.
+              </p>
+            </div>
+
+            <div class="ai-controls">
+              <button id="generate-tests-prompt-btn" class="btn-primary btn-generate-prompt">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span id="btn-generate-tests-prompt-text">Сгенерировать промпт</span>
+              </button>
+
+              <div class="accordion-item">
+                <button id="accordion-tests-toggle-btn" class="accordion-header" aria-expanded="false"
+                  aria-label="Toggle instructions">
+                  <svg id="accordion-tests-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div id="accordion-tests-content" class="accordion-content"
+              style="max-height: 0px; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+              <div class="accordion-inner">
+                <h4 id="help-tests-title">How to use:</h4>
+                <ol id="help-tests-steps">
+                  <li>Fill in the problem statement details in Step 1.</li>
+                  <li>Click 'Generate Prompt' to copy generator script instructions.</li>
+                  <li>Paste the prompt into Claude, Gemini or ChatGPT to write generator code.</li>
+                  <li>This generator can be uploaded to Polygon to generate large tests dynamically.</li>
+                </ol>
+              </div>
+            </div>
+
+            <div id="tests-prompt-output-container" class="prompt-output-container" style="display: none;">
+              <div class="prompt-output-header">
+                <span id="prompt-tests-output-title">Generated Generator Prompt</span>
+                <button id="copy-tests-prompt-btn" class="btn-text-action">
+                  <span id="btn-copy-tests-prompt-text">Copy</span>
+                </button>
+              </div>
+              <textarea id="tests-prompt-output-text" readonly rows="8"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-footer">
+        <button id="back-to-step2-btn" class="btn-secondary btn-flat-cancel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="transform: rotate(180deg); margin-right: 8px;">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+          <span id="btn-back-to-step2">Back to Step 2</span>
+        </button>
+        <button id="finish-problem-btn" class="btn-primary btn-next-step">
+          <span id="btn-finish-problem-text">Submit Problem</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="confirmation-view" class="create-problem-container"
+      style="display: none; opacity: 0; transform: translateY(15px);">
+      <div class="create-problem-header">
+        <div>
+          <h2 id="step4-title">Step 4: Final Confirmation</h2>
+          <p id="step4-subtitle" class="dash-subtitle">Review all entered problem parameters before submitting to
+            Polygon.</p>
+        </div>
+      </div>
+
+      <div class="editor-split-layout confirmation-layout">
+        <div class="editor-pane confirmation-pane">
+          <div class="summary-card">
+            <h3 id="summary-section-info-title" class="summary-sec-title">Main Settings</h3>
+            <div class="summary-field">
+              <span id="summary-label-name" class="summary-label">Problem Name:</span>
+              <span id="summary-val-name" class="summary-value font-medium"></span>
+            </div>
+            <div class="summary-row-grid">
+              <div class="summary-field">
+                <span id="summary-label-time" class="summary-label">Time Limit:</span>
+                <span id="summary-val-time" class="summary-value"></span>
+              </div>
+              <div class="summary-field">
+                <span id="summary-label-memory" class="summary-label">Memory Limit:</span>
+                <span id="summary-val-memory" class="summary-value"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-card" style="margin-top: 20px;">
+            <h3 id="summary-section-statement-title" class="summary-sec-title">Statements</h3>
+            <div class="summary-field">
+              <span id="summary-label-legend" class="summary-label">Legend:</span>
+              <div id="summary-val-legend" class="summary-text-block scrollable-y"></div>
+            </div>
+            <div class="summary-field">
+              <span id="summary-label-input" class="summary-label">Input Format:</span>
+              <div id="summary-val-input" class="summary-text-block scrollable-y"></div>
+            </div>
+            <div class="summary-field">
+              <span id="summary-label-output" class="summary-label">Output Format:</span>
+              <div id="summary-val-output" class="summary-text-block scrollable-y"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-pane confirmation-pane">
+          <div class="summary-card">
+            <h3 id="summary-section-solution-title" class="summary-sec-title">Correct Solution</h3>
+            <div class="summary-field">
+              <span id="summary-label-sol-lang" class="summary-label">Language:</span>
+              <span id="summary-val-sol-lang" class="summary-value font-medium"></span>
+            </div>
+            <div class="summary-field">
+              <span id="summary-label-sol-code" class="summary-label">Solution Code:</span>
+              <pre id="summary-val-sol-code" class="summary-code-preview scrollable-xy"></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-pane confirmation-pane">
+          <div class="summary-card">
+            <h3 id="summary-section-tests-title" class="summary-sec-title">Checker & Tests</h3>
+            <div class="summary-field">
+              <span id="summary-label-checker" class="summary-label">Checker Program:</span>
+              <span id="summary-val-checker" class="summary-value font-medium"></span>
+            </div>
+            <div class="summary-field">
+              <span id="summary-label-tests-count" class="summary-label">Uploaded Tests:</span>
+              <span id="summary-val-tests-count" class="summary-value font-medium"></span>
+            </div>
+            <div class="summary-field">
+              <span id="summary-label-generators-count" class="summary-label">Test Generators:</span>
+              <span id="summary-val-generators-count" class="summary-value font-medium">0</span>
+            </div>
+            <div class="summary-field">
+              <span id="summary-label-script-status" class="summary-label">Tests Script:</span>
+              <span id="summary-val-script-status" class="summary-value font-medium">-</span>
+            </div>
+            <div class="table-container summary-tests-table scrollable-y" style="max-height: 200px; margin-top: 10px;">
+              <table id="summary-tests-table-el">
+                <thead>
+                  <tr>
+                    <th id="th-sum-test-name">Test File</th>
+                    <th id="th-sum-test-size">Size</th>
+                    <th id="th-sum-test-statements" style="text-align: center;">Statements</th>
+                  </tr>
+                </thead>
+                <tbody id="summary-tests-table-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="upload-progress-container" class="upload-progress-card" style="display: none; margin-top: 20px;">
+            <div class="progress-header">
+              <span id="progress-header-title">Uploading to Polygon...</span>
+              <div class="spinner green-spinner small-spinner" id="progress-spinner"></div>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="upload-progress-bar" class="progress-bar-fg" style="width: 0%;"></div>
+            </div>
+            <div id="upload-log-list" class="upload-log-list scrollable-y">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-footer">
+        <button id="back-to-step3-btn" class="btn-secondary btn-flat-cancel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="transform: rotate(180deg); margin-right: 8px;">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+          <span id="btn-back-to-step3">Back to Step 3</span>
+        </button>
+        <button id="export-tricky-btn" class="btn-secondary btn-export-tricky"
+          style="margin-left: auto; margin-right: 12px; display: inline-flex; align-items: center; gap: 6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span id="btn-export-tricky-text">Export for QW_Tricky</span>
+        </button>
+        <button id="confirm-upload-btn" class="btn-primary btn-next-step">
+          <span id="btn-confirm-upload-text">Confirm & Upload</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 QW_Poly by Maxim Kuznetsov (aka <a href="https://github.com/Fortoshka"
+      style="text-decoration: none; color: var(--accent-color);">Fortoshka</a>). all rights
+    reserved via MIT lisence.
+  </footer>
+  <div id="custom-modal-overlay" class="modal-overlay" style="display: none;">
+    <div class="modal-card dialog-card">
+      <div class="dialog-header">
+        <h3 id="custom-modal-title">Notification</h3>
+      </div>
+      <div class="modal-body dialog-body">
+        <p id="custom-modal-message">Message text goes here.</p>
+      </div>
+      <div class="dialog-footer">
+        <button id="custom-modal-cancel-btn" class="btn-secondary">Cancel</button>
+        <button id="custom-modal-ok-btn" class="btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QW_Tricky Export Modal -->
+  <div id="qwt-export-modal" class="modal-overlay" style="display: none;">
+    <div class="dialog-card" style="width: 520px; max-width: 95%;">
+      <div class="dialog-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="qwt-modal-title">Export Task for QW_Tricky</h3>
+        <button type="button" id="qwt-modal-close"
+          style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 24px; line-height: 1; padding: 0 4px;">&times;</button>
+      </div>
+      <div class="dialog-body" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+        <p id="qwt-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">Configure the task
+          parameters before generating for QW_Tricky.</p>
+
+        <div class="input-group" style="margin: 0;">
+          <input type="text" id="qwt-task-id" required placeholder=" ">
+          <label for="qwt-task-id" id="lbl-qwt-task-id">Task Folder Name (ID)</label>
+        </div>
+
+        <div class="input-group" style="margin: 0;">
+          <input type="text" id="qwt-task-title" required placeholder=" ">
+          <label for="qwt-task-title" id="lbl-qwt-task-title">Task Display Title</label>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="input-group" style="margin: 0;">
+            <input type="number" id="qwt-time-limit" value="2000" min="100" max="10000" placeholder=" ">
+            <label for="qwt-time-limit" id="lbl-qwt-time-limit">Time Limit (ms)</label>
+          </div>
+          <div class="input-group" style="margin: 0;">
+            <input type="number" id="qwt-memory-limit" value="256" min="4" max="2048" placeholder=" ">
+            <label for="qwt-memory-limit" id="lbl-qwt-memory-limit">Memory Limit (MB)</label>
+          </div>
+        </div>
+
+        <div
+          style="background: var(--bg-primary); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+          <div style="display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--text-primary);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span id="lbl-qwt-summary-heading">Task Contents Summary</span>
+          </div>
+          <div id="qwt-summary-text" style="color: var(--text-secondary); line-height: 1.4;">
+            Examples: 0 test(s) | Main Tests: 0 test(s)
+          </div>
+          <div id="lbl-qwt-notice-text"
+            style="color: var(--text-secondary); font-size: 12px; font-style: italic; margin-top: 4px;">
+            Main test files in tests/ will contain inputs only (cheat protection protocol).
+          </div>
+        </div>
+      </div>
+      <div class="dialog-footer" style="margin-top: 20px; flex-wrap: wrap; gap: 8px;">
+        <button type="button" id="qwt-save-folder-btn" class="btn-primary"
+          style="display: inline-flex; align-items: center; gap: 6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span id="lbl-qwt-save-folder">Save to Folder on PC</span>
+        </button>
+        <button type="button" id="qwt-download-zip-btn" class="btn-secondary"
+          style="display: inline-flex; align-items: center; gap: 6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span id="lbl-qwt-download-zip">Download ZIP Archive</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pythontutor Import Modal -->
+  <div id="pt-import-modal" class="modal-overlay" style="display: none;">
+    <div class="dialog-card" style="width: 540px; max-width: 95%;">
+      <div class="dialog-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="pt-modal-title">Pythontutor Import (Web Archive)</h3>
+        <button type="button" id="pt-modal-close"
+          style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 24px; line-height: 1; padding: 0 4px;">&times;</button>
+      </div>
+      <div class="dialog-body" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+        <p id="pt-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">
+          Enter a problem URL from pythontutor.ru (web.archive.org) or a problem slug (e.g., <code>series_1</code> or
+          <code>factorial</code>).
+        </p>
+
+        <div class="input-group" style="margin: 0;">
+          <input type="text" id="pt-url-input" required placeholder=" "
+            value="https://web.archive.org/web/20240301103830/http://pythontutor.ru/lessons/for_loop/problems/series_1/">
+          <label for="pt-url-input" id="lbl-pt-url-input">Problem Link or Slug (e.g. series_1)</label>
+        </div>
+
+        <div id="pt-status-alert" class="alert" style="display: none; font-size: 13px;">
+          <span id="pt-status-msg"></span>
+        </div>
+      </div>
+      <div class="dialog-footer" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 8px;">
+        <button type="button" id="pt-cancel-btn" class="btn-secondary">Cancel</button>
+        <button type="button" id="pt-fetch-btn" class="btn-primary"
+          style="display: inline-flex; align-items: center; gap: 6px;">
+          <span class="spinner" id="pt-btn-spinner" style="display: none;"></span>
+          <span id="lbl-pt-fetch-btn">Import Task to Wizard</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ulearn Task Importer Modal -->
+  <div id="ulearn-import-modal" class="modal-overlay" style="display: none;">
+    <div class="dialog-card" style="width: 560px; max-width: 95%;">
+      <div class="dialog-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="ulearn-modal-title">Ulearn Task Import</h3>
+        <button type="button" id="ulearn-modal-close" class="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="dialog-body" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+        <p id="ulearn-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">
+          Enter a task URL from ulearn.me (e.g.
+          <code>https://ulearn.me/course/python/Griby_147686d0-aa0a-456a-9720-001fcd7f6d6c</code>).
+        </p>
+
+        <div class="input-group" style="margin: 0;">
+          <input type="text" id="ulearn-url-input" required placeholder=" "
+            value="https://ulearn.me/course/python/Griby_147686d0-aa0a-456a-9720-001fcd7f6d6c">
+          <label for="ulearn-url-input" id="lbl-ulearn-url-input">Task URL on ulearn.me</label>
+        </div>
+
+        <div id="ulearn-status-alert" class="alert" style="display: none; font-size: 13px;">
+          <span id="ulearn-status-msg"></span>
+        </div>
+      </div>
+      <div class="dialog-footer" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 8px;">
+        <button type="button" id="ulearn-cancel-btn" class="btn-secondary">Cancel</button>
+        <button type="button" id="ulearn-fetch-btn" class="btn-primary"
+          style="display: inline-flex; align-items: center; gap: 6px;">
+          <span class="spinner" id="ulearn-btn-spinner" style="display: none;"></span>
+          <span id="lbl-ulearn-fetch-btn">Import Task to Wizard</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Statement Language Modal -->
+  <div id="add-stmt-lang-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card dialog-card" style="width: 380px;">
+      <div class="dialog-header">
+        <h3 id="add-lang-modal-title">Select Statement Language</h3>
+      </div>
+      <div class="modal-body dialog-body">
+        <div class="input-group">
+          <select id="select-new-stmt-lang" style="padding-top: 10px;">
+            <option value="english">English</option>
+            <option value="russian">Russian</option>
+            <option value="spanish">Spanish</option>
+            <option value="german">German</option>
+            <option value="chinese">Chinese</option>
+            <option value="french">French</option>
+            <option value="kazakh">Kazakh</option>
+            <option value="vietnamese">Vietnamese</option>
+            <option value="uzbek">Uzbek</option>
+            <option value="ukrainian">Ukrainian</option>
+            <option value="tajik">Tajik</option>
+            <option value="georgian">Georgian</option>
+            <option value="kyrgyz">Kyrgyz</option>
+            <option value="portuguese">Portuguese</option>
+            <option value="japanese">Japanese</option>
+          </select>
+          <label for="select-new-stmt-lang" id="label-select-new-stmt-lang" class="select-label">Language</label>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button id="add-lang-cancel-btn" class="btn-secondary">Cancel</button>
+        <button id="add-lang-confirm-btn" class="btn-primary">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Manual Test Modal -->
+  <div id="manual-test-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card dialog-card" style="width: 540px; max-width: 95vw;">
+      <div class="dialog-header"
+        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+        <div>
+          <h3 id="manual-test-modal-title" style="margin: 0 0 4px 0;">Add Test Manually</h3>
+          <p id="manual-test-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">
+            Enter test input data and parameters
+          </p>
+        </div>
+        <button type="button" id="manual-test-modal-close" class="modal-close-btn"
+          aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body dialog-body" style="display: flex; flex-direction: column; gap: 16px;">
+        <input type="hidden" id="manual-test-edit-index" value="-1">
+
+        <div class="input-group">
+          <input type="text" id="manual-test-name" placeholder=" ">
+          <label for="manual-test-name" id="lbl-manual-test-name">Test Name (e.g. test01.txt)</label>
+        </div>
+
+        <div class="input-group">
+          <textarea id="manual-test-input" class="code-editor" rows="6" placeholder=" " required
+            style="font-family: var(--font-mono, monospace); font-size: 13px; line-height: 1.4; resize: vertical;"></textarea>
+          <label for="manual-test-input" id="lbl-manual-test-input">Input Data *</label>
+        </div>
+
+        <div class="input-group">
+          <textarea id="manual-test-output" class="code-editor" rows="4" placeholder=" "
+            style="font-family: var(--font-mono, monospace); font-size: 13px; line-height: 1.4; resize: vertical;"></textarea>
+          <label for="manual-test-output" id="lbl-manual-test-output">Expected Output / Answer (optional)</label>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+          <input type="checkbox" id="manual-test-statements" class="tests-checkbox"
+            style="cursor: pointer; width: 18px; height: 18px;">
+          <label for="manual-test-statements" id="lbl-manual-test-statements"
+            style="cursor: pointer; font-size: 14px; user-select: none;">
+            Use in problem statements
+          </label>
+        </div>
+      </div>
+      <div class="dialog-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+        <button type="button" id="manual-test-cancel-btn" class="btn-secondary">Cancel</button>
+        <button type="button" id="manual-test-save-btn" class="btn-primary">Save Test</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Generator Modal -->
+  <div id="generator-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card dialog-card" style="width: 650px; max-width: 95vw;">
+      <div class="dialog-header"
+        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+        <div>
+          <h3 id="generator-modal-title" style="margin: 0 0 4px 0;">Add Generator</h3>
+          <p id="generator-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">
+            Provide generator source code (C++, Python, etc.)
+          </p>
+        </div>
+        <button type="button" id="generator-modal-close" class="modal-close-btn"
+          aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body dialog-body" style="display: flex; flex-direction: column; gap: 16px;">
+        <input type="hidden" id="generator-edit-index" value="-1">
+
+        <div class="input-group">
+          <input type="text" id="generator-name" placeholder=" " required value="gen.cpp">
+          <label for="generator-name" id="lbl-generator-name">Filename (e.g. gen.cpp or generator.py) *</label>
+        </div>
+
+        <div class="input-group">
+          <textarea id="generator-code" class="code-editor" rows="12" placeholder=" " required
+            style="font-family: var(--font-mono, monospace); font-size: 13px; line-height: 1.4; resize: vertical;"></textarea>
+          <label for="generator-code" id="lbl-generator-code">Generator Source Code *</label>
+        </div>
+      </div>
+      <div class="dialog-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+        <button type="button" id="generator-cancel-btn" class="btn-secondary">Cancel</button>
+        <button type="button" id="generator-save-btn" class="btn-primary">Save Generator</button>
+      </div>
+    </div>
+  </div>
+
+
+<div id="cf-tools-panel" class="cf-tools-panel" hidden aria-label="Codeforces and online test generation">
+  <div class="cf-tools-head"><h2>Codeforces Import &amp; Online Test Lab</h2><button class="btn-secondary" id="cf-tools-close" type="button">Close ×</button></div>
+  <p class="cf-help">Инструменты интегрированы в исходный интерфейс QW_Poly. Метаданные Codeforces загружаются только при доступности API в браузере; полное условие API не отдаёт. Ключи Polygon здесь не запрашиваются.</p>
+  <div class="cf-tools-grid">
+    <section><h3>Загрузка задачи Codeforces</h3><label for="cf-link">ID (4A) или URL задачи</label><input id="cf-link" placeholder="https://codeforces.com/problemset/problem/4/A"><div class="cf-actions"><button class="btn-primary" id="cf-fetch">Получить метаданные</button><button class="btn-secondary" id="cf-visit">Открыть условие ↗</button></div><label for="cf-title">Название</label><input id="cf-title"><label for="cf-tags">Теги</label><input id="cf-tags"><label for="cf-rating">Рейтинг</label><input id="cf-rating" type="number"><label for="cf-statement">Условие (добавьте вручную)</label><textarea id="cf-statement" rows="6"></textarea><div class="cf-actions"><button id="cf-export" class="btn-primary">Скачать JSON задачи</button></div></section>
+    <section><h3>Генератор тестов онлайн</h3><label for="cf-mode">Режим</label><select id="cf-mode"><option value="array">Массив: n и элементы</option><option value="numbers">Случайные целые</option><option value="string">Строка a-z</option><option value="template">Шаблон</option></select><div class="cf-two"><div><label for="cf-count">Тестов</label><input id="cf-count" type="number" min="1" max="100" value="10"></div><div><label for="cf-n">Размер</label><input id="cf-n" type="number" min="1" max="10000" value="10"></div><div><label for="cf-min">Минимум</label><input id="cf-min" type="number" value="1"></div><div><label for="cf-max">Максимум</label><input id="cf-max" type="number" value="100"></div></div><label for="cf-template">Шаблон: {n}, {rand}, {array}, {i}</label><textarea id="cf-template" rows="3" placeholder="{n}&#10;{array}"></textarea><div class="cf-actions"><button class="btn-primary" id="cf-generate">Сгенерировать</button><button class="btn-secondary" id="cf-download">Скачать тесты ZIP</button></div><label for="cf-test-select">Тест</label><select id="cf-test-select"></select><label for="cf-test-input">Вход</label><textarea id="cf-test-input" rows="5"></textarea><label for="cf-test-output">Ожидаемый вывод (заполните вручную)</label><textarea id="cf-test-output" rows="3"></textarea><button class="btn-secondary" id="cf-save-test">Сохранить тест</button></section>
+  </div><p id="cf-status" role="status" aria-live="polite"></p>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script type="module" src="./cf-tools.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+
+</html>
